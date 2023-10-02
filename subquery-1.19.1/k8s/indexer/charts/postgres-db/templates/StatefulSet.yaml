@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{.Values.id.app}}
+spec:
+  serviceName: {{.Values.id.app}}
+  selector:
+    matchLabels:
+      app: "{{.Values.id.app}}"
+  template:
+    metadata:
+      labels:
+        app: "{{.Values.id.app}}"
+    spec:
+      containers:
+        - name: "{{.Values.id.app}}"
+          image: "{{.Values.image.repo}}:{{.Values.image.tag}}"
+          imagePullPolicy: "Always"
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "500Mi"
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+          env:
+            - name: POSTGRES_USER
+              value: "{{ .Values.auth.user }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.auth.pass }}"
+            - name: POSTGRES_DB
+              value: "{{ .Values.auth.db }}"
+            - name: PGDATA
+              value: "{{ .Values.data.path }}"
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data/:z
+              name: postgresdb
+      volumes:
+        - name: postgresdb
+          persistentVolumeClaim:
+            claimName: "{{.Values.id.pvc}}"

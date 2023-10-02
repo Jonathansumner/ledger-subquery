@@ -1,0 +1,66 @@
+# To improve query performance, we strongly suggest adding indexes to any field that you plan to filter or sort by
+# Add the `@index` or `@index(unique: true)` annotation after any non-key field
+# https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
+
+
+enum TxStatus {
+  Success
+  Error
+}
+
+type Block @entity {
+  id: ID! # The block header hash
+  chainId: String @index
+  height: BigInt @index
+  timestamp: String
+}
+
+type Coin @jsonField {
+  denom: String
+  amount: String
+}
+
+type Transaction @entity {
+  id: ID!
+  block: Block
+  gasUsed: BigInt
+  gasWanted: BigInt
+  memo: String
+  status: TxStatus
+  log: String
+  timeline: BigInt @index
+  timeoutHeight: BigInt @index
+  # NB: only the first signer!
+  signerAddress: String @index
+}
+
+
+type Transfer @entity {
+  id: ID!
+  toAddress: String @index
+  fromAddress: String @index
+  amounts: [Coin]
+  denom: String @index
+  timeline: BigInt @index
+}
+
+type eventAttributes @jsonField {
+  key: String
+  value: String
+}
+
+type Event @entity {
+  id: ID!
+  type: String @index
+  attributes: [eventAttributes]
+  log: String
+}
+
+
+type Message @entity {
+  id: ID!
+  typeUrl: String @index
+  json: String
+  timeline: BigInt @index
+}
+

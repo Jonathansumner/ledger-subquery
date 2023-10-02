@@ -1,0 +1,67 @@
+version: "3"
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/db.dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: "subquery"
+      POSTGRES_PASSWORD: "subquery"
+      POSTGRES_DB: "subquery"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U subquery"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  subquery-node:
+    build:
+      context: .
+      dockerfile: ./docker/subql-node.dockerfile
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: "subquery"
+      DB_PASS: "subquery"
+      DB_DATABASE: "subquery"
+      DB_HOST: postgres
+      DB_PORT: 5432
+    command:
+#      - ${SUB_COMMAND} # set SUB_COMMAND env variable to "test" to run tests
+      - -f=/app
+      - --db-schema=app
+      - --workers=4
+      - --batch-size=30
+#      - --unfinalized-blocks=true
+#      - --profiler
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  graphql-engine:
+    image: onfinality/subql-query:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      "postgres":
+        condition: service_healthy
+      "subquery-node":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: "subquery"
+      DB_PASS: "subquery"
+      DB_DATABASE: "subquery"
+      DB_HOST: postgres
+      DB_PORT: 5432
+    command:
+      - --name=app
+      - --playground
+      - --indexer=http://subquery-node:3000

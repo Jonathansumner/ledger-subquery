@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.id.app}}
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "3000"
+    prometheus.io/scrape: "true"
+spec:
+  selector:
+    matchLabels:
+      app: "{{.Values.id.app}}"
+  template:
+    metadata:
+      labels:
+        app: "{{.Values.id.app}}"
+    spec:
+      containers:
+        - name: "{{.Values.id.app}}"
+          image: "{{.Values.image.repo}}:{{.Values.image.tag}}"
+          imagePullPolicy: "Always"
+          resources:
+            limits:
+              cpu: "4000m"
+              memory: "2Gi"
+            requests:
+              cpu: "4000m"
+              memory: "2Gi"
+          args:
+            - --f="{{.Values.envs.args.manifest_path}}"
+            - --db-schema=app
+            - --disable-historical=false
+            - --batch-size=30
+            - --workers=4
+          env:
+            - name: DB_USER
+              value: "{{ .Values.envs.auth.username }}"
+            - name: DB_PASS
+              value: "{{ .Values.envs.auth.password }}"
+            - name: DB_DATABASE
+              value: "{{ .Values.envs.auth.db_name }}"
+            - name: DB_HOST
+              value: "{{ .Values.envs.auth.db_host }}"
+            - name: DB_PORT
+              value: "{{ .Values.envs.auth.db_port }}"
+            - name: START_BLOCK
+              value: "{{ .Values.envs.auth.start_block }}"
+            - name: NETWORK_ENDPOINT
+              value: "{{ .Values.envs.auth.network_endpoint }}"
+            - name: CHAIN_ID
+              value: "{{ .Values.envs.auth.chain_id }}"
+            - name: PROFILING
+              value: "{{ .Values.envs.profiling.block_request_testing }}"
+            - name: PROFILER_ITERATIONS
+              value: "{{ .Values.envs.profiling.iterations}}"
+          ports:
+            - containerPort: 3000

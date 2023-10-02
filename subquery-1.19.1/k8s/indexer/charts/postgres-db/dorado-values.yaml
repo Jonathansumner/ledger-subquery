@@ -1,0 +1,15 @@
+image:
+  repo: postgres
+  tag: 14-alpine
+auth:
+  user: "subquery"
+  pass: "subquery"
+  db: "subquery"
+data:
+  path: "/var/lib/postgresql/data/db/"
+  storage:
+    size: 10Gi
+id:
+  app: postgres-dorado
+  pv: postgres-pv-volume-dorado
+  pvc: postgres-pv-claim-dorado

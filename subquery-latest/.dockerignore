@@ -1,0 +1,34 @@
+# Build
+#dist/
+package-lock.json
+
+# Node Specific
+*/node_modules/
+
+# Deployment
+k8s/
+
+# Git VCS
+.git/
+.gitignore
+
+# SigNoz / ClickHouse data
+docker/signoz/data
+data
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# IDEs
+.idea/
+
+# MacOS Specific
+.DS_Store
+
+# Extra project files
+*.md
+LICENSE
+.nvmrc
+.data/

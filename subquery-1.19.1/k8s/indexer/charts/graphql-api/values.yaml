@@ -1,0 +1,13 @@
+id:
+  app: graphql-api
+
+auth:
+  username: "subquery"
+  password: "subquery"
+  db_name: "subquery"
+  db_port: "5432"
+  db_host: "postgres"
+
+image:
+  repo: jonathansumner/graphql-api
+  tag: v1

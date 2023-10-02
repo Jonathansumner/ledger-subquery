@@ -1,0 +1,161 @@
+specVersion: 1.0.0
+name: juno-subql-starter
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node-cosmos"
+    version: "*"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Fetch SubQuery project
+repository: https://github.com/fetchai/ledger-subquery
+schema:
+  file: ./schema.graphql
+network:
+  chainId: fetchhub-4
+  endpoint: https://rpc-fetchhub.fetch.ai:443
+  chainTypes: # This is a beta feature that allows support for any Cosmos chain by importing the correct protobuf messages
+    cosmos.slashing.v1beta1:
+      file: "./proto/cosmos/slashing/v1beta1/tx.proto"
+      messages:
+        - "MsgUnjail"
+  # Using a dictionary can massively improve indexing speed
+  dictionary: https://api.subquery.network/sq/subquery/cosmos-fetch-ai-dictionary
+dataSources:
+  - kind: cosmos/Runtime
+    startBlock: 5300201
+    mapping:
+      file: "./dist/index.js"
+      handlers:
+        - handler: handleBlock
+          kind: cosmos/BlockHandler
+        - handler: handleTransaction
+          kind: cosmos/TransactionHandler
+        - handler: handleEvent
+          kind: cosmos/EventHandler
+        - handler: handleMessage
+          kind: cosmos/MessageHandler
+        - handler: handleTransfer
+          kind: cosmos/EventHandler
+          filter:
+            type: transfer
+            messageFilter:
+              type: /cosmos.bank.v1beta1.MsgSend
+# -------- Primitives
+#        - handler: handleBlock
+#          kind: cosmos/BlockHandler
+#        - handler: handleTransaction
+#          kind: cosmos/TransactionHandler
+#          filter:
+#            includeFailedTx: true
+#        - handler: handleMessage
+#          kind: cosmos/MessageHandler
+#        - handler: handleEvent
+#          kind: cosmos/EventHandler
+#        - handler: handleEventEmpty
+#          kind: cosmos/EventHandler
+#        - handler: handleEventSuggested
+#          kind: cosmos/EventHandler
+#        - handler: handleEventJSON
+#          kind: cosmos/EventHandler
+## -------- Bank
+#        - handler: handleNativeTransfer
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "transfer"
+#            messageFilter:
+#              type: "/cosmos.bank.v1beta1.MsgSend"
+#        - handler: handleNativeBalanceDecrement
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "coin_spent"
+#        - handler: handleNativeBalanceIncrement
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "coin_received"
+## -------- Governance
+#        - handler: handleGovProposalVote
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "proposal_vote"
+#            messageFilter:
+#              type: "/cosmos.gov.v1beta1.MsgVote"
+## -------- Staking
+#        - handler: handleDistDelegatorClaim
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "withdraw_rewards"
+#            messageFilter:
+#              type: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+#        - handler: handleDelegatorWithdrawRewardEvent
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "withdraw_rewards"
+#        - handler: handleAuthzExec
+#          kind: cosmos/MessageHandler
+#          filter:
+#            type: "/cosmos.authz.v1beta1.MsgExec"
+## -------- Wasm
+#        - handler: handleContractStoreEvent
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "store_code"
+#        - handler: handleContractInstantiateEvent
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "instantiate"
+#        - handler: handleExecuteContractEvent
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "execute"
+#        - handler: handleLegacyBridgeSwap
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "execute"
+#            messageFilter:
+#              type: "/cosmwasm.wasm.v1.MsgExecuteContract"
+#              # Filter to only messages with the swap function call
+#              contractCall: "swap"
+#        # TODO: perhaps merge this handler config and that of Cw20BalanceTransfer
+#        - handler: handleCw20Transfer
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "execute"
+#            messageFilter:
+#              type: "/cosmwasm.wasm.v1.MsgExecuteContract"
+#              contractCall: "transfer"
+#        - handler: handleIBCTransfer
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "ibc_transfer"
+#        - handler: handleCw20BalanceTransfer
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "execute"
+#            messageFilter:
+#              type: "/cosmwasm.wasm.v1.MsgExecuteContract"
+#              contractCall: "transfer"
+#        - handler: handleCw20BalanceBurn
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "execute"
+#            messageFilter:
+#              type: "/cosmwasm.wasm.v1.MsgExecuteContract"
+#              contractCall: "burn"
+#        - handler: handleCw20BalanceMint
+#          kind: cosmos/EventHandler
+#          filter:
+#            type: "execute"
+#            messageFilter:
+#              type: "/cosmwasm.wasm.v1.MsgExecuteContract"
+#              contractCall: "mint"
+### -------- Agents
+##        - handler: handleAlmanacRegistration
+##          kind: cosmos/EventHandler
+##          filter:
+##            type: "wasm"
+##            messageFilter:
+##              type: "/cosmwasm.wasm.v1.MsgExecuteContract"
+##              contractCall: "register"

@@ -1,0 +1,26 @@
+id:
+  app: subquery-new
+image:
+  repo: jonathansumner/subquery-new
+  tag: v1
+
+envs:
+  auth:
+    username: "subquery"
+    password: "subquery"
+    db_name: "subquery"
+    db_port: "5432"
+    db_host: "postgres-dorado"
+    start_block: "827201"
+    network_endpoint: "https://rpc-dorado.fetch.ai:443"
+    chain_id: "dorado-1"
+
+  profiling:
+    block_request_testing: false
+    iterations: 50
+
+  args:
+    smart_batching: false # Based on memory usage
+    batch_size: 50
+    native_profiler: true
+    manifest_path: "/app"

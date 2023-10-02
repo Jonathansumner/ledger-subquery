@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.id.app}}
+spec:
+  selector:
+    matchLabels:
+      app: "{{.Values.id.app}}"
+  template:
+    metadata:
+      labels:
+        app: "{{.Values.id.app}}"
+    spec:
+      containers:
+        - name: "{{.Values.id.app}}"
+          image: "{{.Values.image.repo}}:{{.Values.image.tag}}"
+          imagePullPolicy: "Always"
+          args:
+            - --name=app
+            - --playground
+            - --indexer=http://subql-node:3000
+          env:
+            - name: DB_USER
+              value: "{{ .Values.auth.username }}"
+            - name: DB_PASS
+              value: "{{ .Values.auth.password }}"
+            - name: DB_DATABASE
+              value: "{{ .Values.auth.db_name }}"
+            - name: DB_HOST
+              value: "{{ .Values.auth.db_host }}"
+            - name: DB_PORT
+              value: "{{ .Values.auth.db_port }}"
+            - name: STARTUP_DELAY
+              value: 2s
+          ports:
+            - containerPort: 3000

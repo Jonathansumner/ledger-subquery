@@ -1,0 +1,26 @@
+id:
+  app: subquery-new
+image:
+  repo: jonathansumner/subquery-new
+  tag: v1
+
+envs:
+  auth:
+    username: "subquery"
+    password: "subquery"
+    db_name: "subquery"
+    db_port: "5432"
+    db_host: "postgres"
+    start_block: "1"
+    network_endpoint: "http://fetch-node:26657"
+    chain_id: "test"
+
+  profiling:
+    block_request_testing: false
+    iterations: 50
+
+  args:
+    smart_batching: false
+    batch_size: 100
+    native_profiler: true
+    manifest_path: "/app"

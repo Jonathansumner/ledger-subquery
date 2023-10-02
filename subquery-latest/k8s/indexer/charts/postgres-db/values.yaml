@@ -1,0 +1,15 @@
+image:
+  repo: jonathansumner/postgres-db
+  tag: v1
+auth:
+  user: "subquery"
+  pass: "subquery"
+  db: "subquery"
+data:
+  path: "/var/lib/postgresql/data/db/"
+  storage:
+    size: 10Gi
+id:
+  app: postgres
+  pv: postgres-pv-volume
+  pvc: postgres-pv-claim
